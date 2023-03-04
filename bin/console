@@ -1,0 +1,25 @@
+#!/usr/bin/env php
+<?php
+
+require __DIR__ . '/../vendor/autoload.php';
+
+use Elfennol\SitemapGenerator\Command\SitemapGeneratorCommand;
+use Elfennol\SitemapGenerator\Extractor\Extractor;
+use Elfennol\SitemapGenerator\Filter\RedirectFilter;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
+use Symfony\Component\Console\Application;
+use Symfony\Component\HttpClient\HttpClient;
+
+$application = new Application();
+
+$filters = [];
+$redirectFilter = new RedirectFilter(HttpClient::create());
+$filters[$redirectFilter->getFilter()->value] = $redirectFilter;
+
+$logger = new Logger('main');
+$logger->pushHandler(new StreamHandler('var/log/main.log'));
+
+$application->add(new SitemapGeneratorCommand(new Extractor(), $filters, $logger));
+
+$application->run();
