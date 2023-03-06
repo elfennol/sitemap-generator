@@ -72,6 +72,8 @@ The Output: a sitemap format on stdout.
 
 ## Examples
 
+Before executing the commands, run composer install.
+
 ### Simplest use:
 
 ```sh
@@ -91,6 +93,14 @@ bin/console generate-sitemap urls.xml -f redirect -c 'abtest=1; path=/'
 ```
 
 ### With Docker:
+
+Composer install:
+
+```sh
+docker container run --rm -v $(pwd):/app/ composer:2 composer install
+```
+
+The command:
 
 ```sh
 docker container run --rm -v $(pwd):/app/ --network host php:8.2-cli \
