@@ -17,26 +17,30 @@ readonly class SitemapGenerator
         $xmlUrlsetAttr->value = 'http://www.sitemaps.org/schemas/sitemap/0.9';
         $xmlUrlset->appendChild($xmlUrlsetAttr);
 
+        $processedUrls = [];
         foreach ($urls as $url) {
             $this->assertLocIsNotEmpty($url[Tags::LOC]);
-            $xmlUrl = $dom->createElement(Tags::URL);
-            $xmlLoc = $dom->createElement(Tags::LOC, $url[Tags::LOC]);
-            $xmlUrl->appendChild($xmlLoc);
-            if (isset($url[Tags::LASTMOD])) {
-                $xmlLastmod = $dom->createElement(Tags::LASTMOD, $url[Tags::LASTMOD]);
-                $xmlUrl->appendChild($xmlLastmod);
+            if (!isset($processedUrls[$url[Tags::LOC]])) {
+                $xmlUrl = $dom->createElement(Tags::URL);
+                $xmlLoc = $dom->createElement(Tags::LOC, $url[Tags::LOC]);
+                $xmlUrl->appendChild($xmlLoc);
+                if (isset($url[Tags::LASTMOD])) {
+                    $xmlLastmod = $dom->createElement(Tags::LASTMOD, $url[Tags::LASTMOD]);
+                    $xmlUrl->appendChild($xmlLastmod);
+                }
+                if (isset($url[Tags::CHANGEFREQ])) {
+                    $this->assertIsChangefreq($url[Tags::CHANGEFREQ]);
+                    $xmlChangefreq = $dom->createElement(Tags::CHANGEFREQ, $url[Tags::CHANGEFREQ]);
+                    $xmlUrl->appendChild($xmlChangefreq);
+                }
+                if (isset($url[Tags::PRIORITY])) {
+                    $this->assertIsPriority($url[Tags::PRIORITY]);
+                    $xmlPriority = $dom->createElement(Tags::PRIORITY, $url[Tags::PRIORITY]);
+                    $xmlUrl->appendChild($xmlPriority);
+                }
+                $xmlUrlset->appendChild($xmlUrl);
+                $processedUrls[$url[Tags::LOC]] = true;
             }
-            if (isset($url[Tags::CHANGEFREQ])) {
-                $this->assertIsChangefreq($url[Tags::CHANGEFREQ]);
-                $xmlChangefreq = $dom->createElement(Tags::CHANGEFREQ, $url[Tags::CHANGEFREQ]);
-                $xmlUrl->appendChild($xmlChangefreq);
-            }
-            if (isset($url[Tags::PRIORITY])) {
-                $this->assertIsPriority($url[Tags::PRIORITY]);
-                $xmlPriority = $dom->createElement(Tags::PRIORITY, $url[Tags::PRIORITY]);
-                $xmlUrl->appendChild($xmlPriority);
-            }
-            $xmlUrlset->appendChild($xmlUrl);
         }
 
         $dom->formatOutput = true;
