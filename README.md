@@ -1,3 +1,5 @@
+:warning: **NOT MAINTAINED**
+
 # Sitemap Generator
 
 It's Friday evening. Existential question: do I play The Witcher 3 or do I
